@@ -6,7 +6,10 @@ import {
 } from "./recipes.schemas.js";
 import { getRecipeById, getRecipes } from "./recipes.service.js";
 
-export function getRecipesHandler(request: Request, response: Response): void {
+export async function getRecipesHandler(
+  request: Request,
+  response: Response
+): Promise<void> {
   const validationResult = recipesListQuerySchema.safeParse(request.query);
 
   if (!validationResult.success) {
@@ -16,12 +19,15 @@ export function getRecipesHandler(request: Request, response: Response): void {
     return;
   }
 
-  const result = getRecipes(validationResult.data);
+  const result = await getRecipes(validationResult.data);
 
   response.json(result);
 }
 
-export function getRecipeByIdHandler(request: Request, response: Response): void {
+export async function getRecipeByIdHandler(
+  request: Request,
+  response: Response
+): Promise<void> {
   const validationResult = recipeIdParamSchema.safeParse(request.params);
 
   if (!validationResult.success) {
@@ -31,7 +37,7 @@ export function getRecipeByIdHandler(request: Request, response: Response): void
     return;
   }
 
-  const recipe = getRecipeById(validationResult.data.recipeId);
+  const recipe = await getRecipeById(validationResult.data.recipeId);
 
   if (!recipe) {
     response.status(404).json({
